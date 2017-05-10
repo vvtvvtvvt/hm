@@ -19,15 +19,13 @@ function isAllTrue(array, fn) {
         throw new Error(oErrorText.NOT_FUNCTION('fn'));
     }
 
-    let bFlag = true;
-
     for (let i=0; i < array.length; ++i) {
         if (!fn(array[i])) {
-            bFlag = false;
+            return false;
         }
     }
 
-    return bFlag;
+    return true;
 }
 
 /*
@@ -49,15 +47,13 @@ function isSomeTrue(array, fn) {
         throw new Error(oErrorText.NOT_FUNCTION('fn'));
     }
 
-    let bFlag = false;
-
     for (let i=0; i<array.length; ++i) {
         if (fn(array[i])) {
-            bFlag = true;
+            return true;
         }
     }
 
-    return bFlag;
+    return false;
 }
 
 /*
