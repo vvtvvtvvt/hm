@@ -115,8 +115,7 @@ function upperProps(obj) {
  */
 function slice(array, from, to) {
     let iLeft = 0,
-        iRight = array.length,
-        aResult = [];
+        iRight = array.length;
 
     // вычисляем смещение слева
     if (from) {
@@ -158,9 +157,15 @@ function slice(array, from, to) {
         }
     }
 
+    if ((iRight - iLeft) < 1) {
+        return [];
+    }
+
+    let aResult = Array(iRight - iLeft);
+
     // создаём результирующий массив
     for (let i = iLeft; i<iRight; ++i) {
-        aResult.push((array[i]));
+        aResult[i - iLeft] = array[i];
     }
 
     return aResult;
@@ -172,12 +177,12 @@ function slice(array, from, to) {
  Proxy должен перехватывать все попытки записи значений свойств и возводить это значение в квадрат
  */
 function createProxy(obj) {
-   // obj.toString = function() {  return this;};
-   // obj.valueOf = function() { return this;};
 
     return new Proxy(obj, {
         set(obj, name, val) {
             obj[name] = val * val;
+
+            return true;
         }
     });
 }
