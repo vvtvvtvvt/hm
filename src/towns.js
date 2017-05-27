@@ -120,7 +120,7 @@ filterInput.addEventListener('keyup', function() {
             if (isMatching(oItem.name, filterInput.value)) {
                 let LI = document.createElement('LI');
 
-                LI.innerText = filterInput.value;
+                LI.innerText = oItem.name;
                 filterResult.appendChild(LI);
             }
         });
