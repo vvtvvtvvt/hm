@@ -36,6 +36,7 @@ let homeworkContainer = document.querySelector('#homework-container');
  *
  * @return {Promise<Array<{name: string}>>}
  */
+
 function loadTowns() {
     function compare(a, b) {
         if (a.name < b.name) {
@@ -96,26 +97,73 @@ let filterBlock = homeworkContainer.querySelector('#filter-block');
 let filterInput = homeworkContainer.querySelector('#filter-input');
 let filterResult = homeworkContainer.querySelector('#filter-result');
 let townsPromise = loadTowns();
+let badLoad = undefined;
+let sPrevText = loadingBlock.innerText;
+
+let drawBadLoad = function() {
+
+    if (!badLoad) {
+        badLoad = document.createElement('DIV');
+
+        badLoad.innerText = 'Не удалось загрузить города';
+        let BUTTOM = document.createElement('BUTTON');
+
+        BUTTOM.classList.add('.j-restart');
+        BUTTOM.innerText = 'Повторить';
+        badLoad.appendChild(BUTTOM);
+    }
+
+    sPrevText = loadingBlock.innerText;
+    loadingBlock.innerText = '';
+    loadingBlock.appendChild(badLoad);
+};
+
+let drawLoad = function() {
+
+    loadingBlock.innerHtml = sPrevText;
+};
+
+loadingBlock.addEventListener('click', function() {
+
+    townsPromise = loadTowns();
+
+    townsPromise.then (
+        function() {
+            drawLoad();
+            loadingBlock.style.display = 'none';
+            filterBlock.style.display = 'block';
+        },
+
+        function() {
+            drawBadLoad();
+        }
+    );
+});
 
 townsPromise.then (
     function() {
+        drawLoad();
         loadingBlock.style.display = 'none';
         filterBlock.style.display = 'block';
+    },
+    function() {
+        drawBadLoad();
     }
 );
 
 filterInput.addEventListener('keyup', function() {
 
-    while (filterResult.firstChild) {
-        filterResult.removeChild(filterResult.firstChild);
-    }
-
-    if (filterInput.value == '') {
-
-        return;
-    }
-
     townsPromise.then( function(aCity) {
+
+        while (filterResult.firstChild) {
+            filterResult.removeChild(filterResult.firstChild);
+        }
+
+        if (filterInput.value == '') {
+
+            return;
+        }
+
         aCity.forEach( function(oItem) {
             if (isMatching(oItem.name, filterInput.value)) {
                 let LI = document.createElement('LI');
