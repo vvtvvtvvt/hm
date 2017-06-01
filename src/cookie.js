@@ -51,60 +51,72 @@ function isMatching(full, chunk) {
     return true;
 }
 
-function addCookie(sName, sValue, sSearch){
-  if (!oCookie.hasOwnProperty(sName)) {
-      let sTemplate =  `<td>${sName}</td>
-                    <td class="val">${sValue}</td>
+function parseCookie() {
+
+    return document.cookie
+        .split('; ')
+        .filter(Boolean)
+        .map(cookie => cookie.match(/^([^=]+)=(.+)/))
+        .reduce((obj, [, name, value]) => {
+            obj[name] = value;
+
+            return obj;
+        }, {});
+}
+
+function getView(sName, sValue) {
+    let sTemplate = `<td>${sName}</td>
+                    <td id='${sName}' >${sValue}</td>
                     <td>
-                        <button class="delete" data-name="${sName}">Удалить</button>
+                        <button class='delete' data-name='${sName}'>Удалить</button>
                     </td>`;
-      let tr = document.createElement('TR');
+    let tr = document.createElement('TR');
 
-      tr.innerHTML = sTemplate;
-      oCookie[sName] = {
-          'value': sValue,
-          'view': tr
-      };
+    tr.setAttribute('id', 'all'+sName);
+    tr.innerHTML = sTemplate;
 
-      if (sSearch=='' || isMatching(sName, sSearch)) {
+    return tr;
+}
 
-          listTable.appendChild(oCookie[sName].view);
-      }
-  }
-  else{
-      oCookie[sName].value = sValue;
-      if (sSearch=='' || isMatching(sName, sSearch)) {
-          oCookie[sName].view.querySelector(".val").innerText = sValue;
-      }
-  }
+function addCookie(sName, sValue, sSearch) {
+    oCookie = parseCookie();
 
-  document.cookie = `${sName} = ${sValue}`;
+    if (!oCookie.hasOwnProperty(sName)) {
 
-};
-
-function deleteCookie(sName, sSearch){
-    if (sSearch=='' || isMatching(sName, sSearch)) {
-        listTable.removeChild(oCookie[sName].view);
+        if (sSearch=='' || isMatching(sName, sSearch)||isMatching(sValue, sSearch)) {
+            listTable.appendChild(getView(sName, sValue));
+        }
+    } else {
+        if (sSearch=='' || isMatching(sName, sSearch)||isMatching(sValue, sSearch)) {
+            listTable.querySelector('#' +sName).innerText = sValue;
+        } else {
+            listTable.removeChild(listTable.querySelector('#all'+sName));
+        }
     }
 
-    delete oCookie[sName];
+    document.cookie = `${sName}=${sValue}`;
+}
 
+function deleteCookie(sName) {
+
+    listTable.removeChild(listTable.querySelector('#all'+sName));
     document.cookie = `${sName}=; expires=${(new Date(0)).toGMTString()}`;
-};
+}
 
-function updateCookieList(sSearch){
-    listTable.innerHTML = "";
+function updateCookieList(sSearch) {
+
+    oCookie = parseCookie();
+    listTable.innerHTML = '';
     let oFragment = document.createDocumentFragment();
 
-    for(let key in oCookie) {
-        if (sSearch=='' || isMatching(key, sSearch)) {
-            oFragment.appendChild(oCookie[key].view);
+    for (let key in oCookie) {
+        if (sSearch=='' || isMatching(key, sSearch)||isMatching(oCookie[key], sSearch)) {
+            oFragment.appendChild(getView(key, oCookie[key]));
         }
 
         listTable.appendChild(oFragment);
     }
 }
-
 
 filterNameInput.addEventListener('keyup', function() {
 
@@ -113,15 +125,12 @@ filterNameInput.addEventListener('keyup', function() {
 });
 
 addButton.addEventListener('click', () => {
-    console.log("CLICK");
     addCookie(addNameInput.value, addValueInput.value, sSearchCookie);
-    console.log(oCookie);
 });
 
 listTable.addEventListener('click', (event)=>{
-    if(event.target.classList.contains('delete')) {
-        console.log(event.target);
-        console.log(event.target.getAttribute('data-name'));
+    if (event.target.classList.contains('delete')) {
+
         deleteCookie(event.target.getAttribute('data-name'), sSearchCookie);
     }
 });
