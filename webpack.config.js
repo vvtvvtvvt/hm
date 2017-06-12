@@ -16,7 +16,6 @@ loaders.push({
 module.exports = {
     entry: {
         main: './src/index.js',
-        cookie: './src/cookie.js'
     },
     output: {
         filename: '[name].[hash].js',
@@ -39,12 +38,7 @@ module.exports = {
             template: 'index.hbs',
             chunks: ['main']
         }),
-        new HtmlPlugin({
-            title: 'Div Drag And Drop',
-            template: 'cookie.hbs',
-            filename: 'cookie.html',
-            chunks: ['cookie']
-        }),
+
         new CleanWebpackPlugin(['dist'])
     ]
 };
