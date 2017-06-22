@@ -1,0 +1,33 @@
+<section class="window" style="left:{{pos_x}}px; top: {{pos_y}}px;" data-coord="{{coord}}">
+    <form action="" class="dialog j-form-add">
+        <header class="title">
+            <span class="title__text j-title">{{adress}}</span>
+            <div class="title__close j-close">x</div>
+        </header>
+        <article class="art">
+            <ul class="msg j-msgs">
+                {{#if comments}}
+                    {{#each comments}}
+                        <li class="msg__item">
+                            <header class="msg__title">
+                                <span class="msg__name">{{autor}}</span><span class="msg__plase">{{plase}}</span><span class="msg__date">{{date}}</span>
+                            </header>
+                            <div class="msg__text">{{text}}</div>
+                        </li>
+                    {{/each}}
+                {{else}}
+                    <li>
+                        <span class="msg__empty">Нет отзывов по этому адресу</span>
+                    </li>
+                {{/if}}
+            </ul>
+            <h1 class="new-mst__title">Ваш отзыв</h1>
+            <input type="text" class="form-item__input j-name" placeholder="Ваше имя" />
+            <input type="text" class="form-item__input j-plase" placeholder="Укажите место" />
+            <textarea name="" id="" cols="30" rows="10" class="form-item__area j-text" placeholder="Поделитесь впечатлениями"></textarea>
+        </article>
+        <footer class="footer">
+            <button class="btn j-send-btn">Добавить</button>
+        </footer>
+    </form>
+</section>
